@@ -25,14 +25,18 @@ def main():
         }
     }
 
-    handle_dialog(request.json, response, 'слона')
+    handle_dialog(request.json, response)
 
     logging.info(f'Response:  {response!r}')
 
     return json.dumps(response)
 
 
-def handle_dialog(req, res, title):
+TITLE = 'слона'
+
+
+def handle_dialog(req, res):
+    global TITLE
     k = 0
     user_id = req['session']['user_id']
 
@@ -44,7 +48,7 @@ def handle_dialog(req, res, title):
                 "Отстань!",
             ]
         }
-        res['response']['text'] = f'Привет! Купи {title}!'
+        res['response']['text'] = f'Привет! Купи {TITLE}!'
         res['response']['buttons'] = get_suggests(user_id)
         return
 
@@ -61,17 +65,19 @@ def handle_dialog(req, res, title):
         'хорошо'
     ]) and 'не' not in req['request']['original_utterance'].lower():
         if k == 1:
-            res['response']['text'] = f'{title} можно найти на Яндекс.Маркете!'
+            res['response']['text'] = f'{TITLE} можно найти на Яндекс.Маркете!'
             res['response']['end_session'] = True
         else:
             k += 1
-            res['response']['text'] = f'{title} можно найти на Яндекс.Маркете!'
-            title = 'кролика'
+            res['response']['text'] = f'{TITLE} можно найти на Яндекс.Маркете!'
+            TITLE = 'кролика'
+            res['response']['text'] = f'Привет! Купи {TITLE}!'
+            res['response']['buttons'] = get_suggests(user_id)
         return
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи {title}!"
+        f"Все говорят '{req['request']['original_utterance']}', а ты купи {TITLE}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 

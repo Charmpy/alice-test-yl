@@ -28,8 +28,7 @@ def main():
     handle_dialog(request.json, response, 'слона')
 
     logging.info(f'Response:  {response!r}')
-    handle_dialog(request.json, response, 'кролика')
-    handle_dialog(request.json, response, 'слона')
+
 
     return json.dumps(response)
 

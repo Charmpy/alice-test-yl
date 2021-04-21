@@ -66,7 +66,7 @@ def handle_dialog(req, res, title):
         else:
             k += 1
             res['response']['text'] = f'{title} можно найти на Яндекс.Маркете!'
-            title = 'кролик'
+            title = 'кролика'
         return
 
     # Если нет, то убеждаем его купить слона!

@@ -29,7 +29,6 @@ def main():
 
     logging.info(f'Response:  {response!r}')
 
-
     return json.dumps(response)
 
 
@@ -62,6 +61,14 @@ def handle_dialog(req, res, title):
     ]) and 'не' not in req['request']['original_utterance'].lower():
         res['response']['text'] = f'{title} можно найти на Яндекс.Маркете!'
         res['response']['end_session'] = True
+        response = {
+            'session': request.json['session'],
+            'version': request.json['version'],
+            'response': {
+                'end_session': False
+            }
+        }
+        handle_dialog(request.json, response, 'кролика')
         return
 
     # Если нет, то убеждаем его купить слона!

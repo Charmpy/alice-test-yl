@@ -33,6 +33,7 @@ def main():
 
 
 def handle_dialog(req, res, title):
+    k = 0
     user_id = req['session']['user_id']
 
     if req['session']['new']:
@@ -59,16 +60,12 @@ def handle_dialog(req, res, title):
         'покупаю',
         'хорошо'
     ]) and 'не' not in req['request']['original_utterance'].lower():
-        res['response']['text'] = f'{title} можно найти на Яндекс.Маркете!'
-        res['response']['end_session'] = True
-        response = {
-            'session': request.json['session'],
-            'version': request.json['version'],
-            'response': {
-                'end_session': False
-            }
-        }
-        handle_dialog(request.json, response, 'кролика')
+        if k == 1:
+            res['response']['text'] = f'{title} можно найти на Яндекс.Маркете!'
+            res['response']['end_session'] = True
+        else:
+            k += 1
+            title = 'кролик'
         return
 
     # Если нет, то убеждаем его купить слона!

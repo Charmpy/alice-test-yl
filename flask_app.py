@@ -3,44 +3,20 @@ from flask import Flask, request
 import logging
 import os
 
-# библиотека, которая нам понадобится для работы с JSON
 import json
 
-# создаём приложение
-# мы передаём __name__, в нем содержится информация,
-# в каком модуле мы находимся.
-# В данном случае там содержится '__main__',
-# так как мы обращаемся к переменной из запущенного модуля.
-# если бы такое обращение, например,
-# произошло внутри модуля logging, то мы бы получили 'logging'
 app = Flask(__name__)
 
-# Устанавливаем уровень логирования
 logging.basicConfig(level=logging.INFO)
 
-# Создадим словарь, чтобы для каждой сессии общения
-# с навыком хранились подсказки, которые видел пользователь.
-# Это поможет нам немного разнообразить подсказки ответов
-# (buttons в JSON ответа).
-# Когда новый пользователь напишет нашему навыку,
-# то мы сохраним в этот словарь запись формата
 # sessionStorage[user_id] = {'suggests': ["Не хочу.", "Не буду.", "Отстань!" ]}
-# Такая запись говорит, что мы показали пользователю эти три подсказки.
-# Когда он откажется купить слона,
-# то мы уберем одну подсказку. Как будто что-то меняется :)
 sessionStorage = {}
 
 
 @app.route('/post', methods=['POST'])
-# Функция получает тело запроса и возвращает ответ.
-# Внутри функции доступен request.json - это JSON,
-# который отправила нам Алиса в запросе POST
 def main():
     logging.info(f'Request: {request.json!r}')
 
-    # Начинаем формировать ответ, согласно документации
-    # мы собираем словарь, который потом при помощи
-    # библиотеки json преобразуем в JSON и отдадим Алисе
     response = {
         'session': request.json['session'],
         'version': request.json['version'],
@@ -49,25 +25,18 @@ def main():
         }
     }
 
-    # Отправляем request.json и response в функцию handle_dialog.
-    # Она сформирует оставшиеся поля JSON, которые отвечают
-    # непосредственно за ведение диалога
-    handle_dialog(request.json, response)
+    handle_dialog(request.json, response, 'слона')
+    handle_dialog(request.json, response, 'кролика')
 
     logging.info(f'Response:  {response!r}')
 
-    # Преобразовываем в JSON и возвращаем
     return json.dumps(response)
 
 
-def handle_dialog(req, res):
+def handle_dialog(req, res, title):
     user_id = req['session']['user_id']
 
     if req['session']['new']:
-        # Это новый пользователь.
-        # Инициализируем сессию и поприветствуем его.
-        # Запишем подсказки, которые мы ему покажем в первый раз
-
         sessionStorage[user_id] = {
             'suggests': [
                 "Не хочу.",
@@ -75,9 +44,7 @@ def handle_dialog(req, res):
                 "Отстань!",
             ]
         }
-        # Заполняем текст ответа
-        res['response']['text'] = 'Привет! Купи слона!'
-        # Получим подсказки
+        res['response']['text'] = f'Привет! Купи {title}!'
         res['response']['buttons'] = get_suggests(user_id)
         return
 
@@ -93,14 +60,13 @@ def handle_dialog(req, res):
         'покупаю',
         'хорошо'
     ]) and 'не' not in req['request']['original_utterance'].lower():
-        # Пользователь согласился, прощаемся.
-        res['response']['text'] = 'Слона можно найти на Яндекс.Маркете!'
+        res['response']['text'] = f'{title} можно найти на Яндекс.Маркете!'
         res['response']['end_session'] = True
         return
 
     # Если нет, то убеждаем его купить слона!
     res['response']['text'] = \
-        f"Все говорят '{req['request']['original_utterance']}', а ты купи слона!"
+        f"Все говорят '{req['request']['original_utterance']}', а ты купи {title}!"
     res['response']['buttons'] = get_suggests(user_id)
 
 
@@ -108,7 +74,6 @@ def handle_dialog(req, res):
 def get_suggests(user_id):
     session = sessionStorage[user_id]
 
-    # Выбираем две первые подсказки из массива.
     suggests = [
         {'title': suggest, 'hide': True}
         for suggest in session['suggests'][:2]
@@ -118,12 +83,9 @@ def get_suggests(user_id):
     session['suggests'] = session['suggests'][1:]
     sessionStorage[user_id] = session
 
-    # Если осталась только одна подсказка, предлагаем подсказку
-    # со ссылкой на Яндекс.Маркет.
     if len(suggests) < 2:
         suggests.append({
             "title": "Ладно",
-            "url": "https://market.yandex.ru/search?text=слон",
             "hide": True
         })
 

@@ -78,6 +78,12 @@ def handle_dialog(res, req):
                     'hide': True
                 } for city in cities
             ]
+            res['response']['buttons'].append(
+                {
+                    'title': 'помощь',
+                    'hide': True
+                }
+            )
     # если мы знакомы с пользователем и он нам что-то написал,
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
@@ -88,6 +94,12 @@ def handle_dialog(res, req):
                 'hide': True
             } for city in cities
         ]
+        res['response']['buttons'].append(
+            {
+                'title': 'помощь',
+                'hide': True
+            }
+        )
         # ищем город в сообщение от пользователя
         city = get_city(req)
         # если этот город среди известных нам,
@@ -100,6 +112,9 @@ def handle_dialog(res, req):
             res['response']['text'] = 'Я угадал!'
         # если не нашел, то отвечает пользователю
         # 'Первый раз слышу об этом городе.'
+        elif req['request']['original_utterance'].lower() == 'помощь':
+            res['response']['text'] = \
+                'Нажимай на кнопки, чтобы смотерть на картинки'
         else:
             res['response']['text'] = \
                 'Первый раз слышу об этом городе. Попробуй еще разок!'

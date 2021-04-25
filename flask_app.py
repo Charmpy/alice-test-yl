@@ -2,7 +2,6 @@ from flask import Flask, request
 import logging
 import json
 import random
-import os
 
 app = Flask(__name__)
 
@@ -78,28 +77,10 @@ def handle_dialog(res, req):
                     'hide': True
                 } for city in cities
             ]
-            res['response']['buttons'].append(
-                {
-                    'title': 'помощь',
-                    'hide': True
-                }
-            )
     # если мы знакомы с пользователем и он нам что-то написал,
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
     else:
-        res['response']['buttons'] = [
-            {
-                'title': city.title(),
-                'hide': True
-            } for city in cities
-        ]
-        res['response']['buttons'].append(
-            {
-                'title': 'помощь',
-                'hide': True
-            }
-        )
         # ищем город в сообщение от пользователя
         city = get_city(req)
         # если этот город среди известных нам,
@@ -112,9 +93,6 @@ def handle_dialog(res, req):
             res['response']['text'] = 'Я угадал!'
         # если не нашел, то отвечает пользователю
         # 'Первый раз слышу об этом городе.'
-        elif req['request']['original_utterance'].lower() == 'помощь':
-            res['response']['text'] = \
-                'Нажимай на кнопки, чтобы смотерть на картинки'
         else:
             res['response']['text'] = \
                 'Первый раз слышу об этом городе. Попробуй еще разок!'
@@ -142,5 +120,4 @@ def get_first_name(req):
 
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run()

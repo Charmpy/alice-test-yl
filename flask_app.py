@@ -72,12 +72,6 @@ def handle_dialog(res, req):
                           + first_name.title() \
                           + '. Я - Алиса.'
             # получаем варианты buttons из ключей нашего словаря cities
-            res['response']['buttons'] = [
-                {
-                    'title': city.title(),
-                    'hide': True
-                } for city in cities
-            ]
     # если мы знакомы с пользователем и он нам что-то написал,
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
@@ -89,7 +83,8 @@ def handle_dialog(res, req):
         good = random.choice(['москва', 'нью-йорк', 'париж'])
         res['response']['card'] = {}
         res['response']['card']['type'] = 'BigImage'
-        res['response']['card']['title'] = 'Этот город я знаю.'
+        res['response']['card']['title'] = sessionStorage[user_id]['first_name']\
+                                           + ', угадай город'
         res['response']['card']['image_id'] = random.choice(cities[good])
         res['response']['text'] = 'Я угадал!'
 

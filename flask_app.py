@@ -33,6 +33,7 @@ cities = {
 sessionStorage = {}
 
 pretty_flag = False
+good = random.choice(['москва', 'париж', 'нью-йорк'])
 
 
 @app.route('/post', methods=['POST'])
@@ -51,12 +52,12 @@ def main():
 
 
 def handle_dialog(res, req):
-    global pretty_flag
+    global pretty_flag, good
     user_id = req['session']['user_id']
 
     # если пользователь новый, то просим его представиться.
     if req['session']['new']:
-        res['response']['text'] = '(10) Привет! Назови свое имя!'
+        res['response']['text'] = '(11) Привет! Назови свое имя!'
         # создаем словарь в который в будущем положим имя пользователя
         sessionStorage[user_id] = {
             'first_name': None
@@ -87,9 +88,8 @@ def handle_dialog(res, req):
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
     else:
-        good = random.choice(['москва'])
         if 'да' in req["request"]['command']:
-
+            good = random.choice(['москва', 'париж', 'нью-йорк'])
             res['response']['card'] = {}
             res['response']['card']['type'] = 'BigImage'
             res['response']['card']['title'] = \

@@ -34,6 +34,7 @@ sessionStorage = {}
 
 pretty_flag = False
 
+
 @app.route('/post', methods=['POST'])
 def main():
     logging.info(f'Request: {request.json!r}')
@@ -55,7 +56,7 @@ def handle_dialog(res, req):
 
     # если пользователь новый, то просим его представиться.
     if req['session']['new']:
-        res['response']['text'] = '(9) Привет! Назови свое имя!'
+        res['response']['text'] = '(10) Привет! Назови свое имя!'
         # создаем словарь в который в будущем положим имя пользователя
         sessionStorage[user_id] = {
             'first_name': None

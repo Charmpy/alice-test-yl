@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, request
 import logging
 import json
@@ -118,6 +120,7 @@ def get_first_name(req):
             # Во всех остальных случаях возвращаем None.
             return entity['value'].get('first_name', None)
 
-
 if __name__ == '__main__':
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
+

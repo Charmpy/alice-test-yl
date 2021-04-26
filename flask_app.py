@@ -92,7 +92,7 @@ def handle_dialog(res, req):
             res['response']['card'] = {}
             res['response']['card']['type'] = 'BigImage'
             res['response']['card']['title'] = \
-                sessionStorage[user_id]['first_name'].title() + ' Угадай город'
+                sessionStorage[user_id]['first_name'].title() + ', Угадай город'
             res['response']['card']['image_id'] = random.choice(cities[good])
             res['response']['text'] = 'Я угадал!'
 

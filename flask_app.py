@@ -12,6 +12,13 @@ logging.basicConfig(level=logging.INFO)
 # а значение — массив, где перечислены id картинок,
 # которые мы записали в прошлом пункте.
 
+countries = {
+    'москва': 'россия',
+    'париж': 'франция',
+    'нью-йорк': 'сша'
+
+}
+
 cities = {
     'москва': ['1540737/daa6e420d33102bf6947',
                '213044/7df73ae4cc715175059e'],
@@ -25,6 +32,7 @@ cities = {
 # мы будем хранить его имя
 sessionStorage = {}
 
+pretty_flag = False
 
 @app.route('/post', methods=['POST'])
 def main():
@@ -42,11 +50,12 @@ def main():
 
 
 def handle_dialog(res, req):
+    global pretty_flag
     user_id = req['session']['user_id']
 
     # если пользователь новый, то просим его представиться.
     if req['session']['new']:
-        res['response']['text'] = '(6) Привет! Назови свое имя!'
+        res['response']['text'] = '(7) Привет! Назови свое имя!'
         # создаем словарь в который в будущем положим имя пользователя
         sessionStorage[user_id] = {
             'first_name': None
@@ -88,18 +97,14 @@ def handle_dialog(res, req):
 
         elif 'нет' in req["request"]['command']:
             res['response']['text'] = 'Как хочешь'
-        else:
-            # ищем город в сообщение от пользователя
-            city = req["request"]['command']
-            # если этот город среди известных нам,
-            # то показываем его (выбираем одну из двух картинок случайно)
-            if good in city.lower():
-                res['response']['text'] = 'Верно!, Сыграем еще?'
+        elif pretty_flag:
+            if countries[good] in req["request"]['command']:
+                res['response']['text'] = 'всё верно'
                 res['response']['buttons'] = [
                     {
                         'title': 'Показать на карте',
                         'hide': True,
-                        "url": f"https://yandex.ru/maps/?mode=search&text={city}"
+                        "url": f"https://yandex.ru/maps/?mode=search&text={good}"
                     },
                     {
                         'title': 'да',
@@ -110,6 +115,19 @@ def handle_dialog(res, req):
                         'hide': True,
                     },
                 ]
+                pretty_flag = False
+            else:
+                res['response']['text'] = \
+                    'Неверно. Попробуй еще разок!'
+        else:
+            # ищем город в сообщение от пользователя
+            city = req["request"]['command']
+            # если этот город среди известных нам,
+            # то показываем его (выбираем одну из двух картинок случайно)
+            if good in city.lower():
+                pretty_flag = True
+                res['response']['text'] = 'Верно!, Угадаешь страну?'
+
             # если не нашел, то отвечает пользователю
             # 'Первый раз слышу об этом городе.'
             else:

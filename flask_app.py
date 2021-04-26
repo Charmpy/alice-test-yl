@@ -91,7 +91,8 @@ def handle_dialog(res, req):
 
             res['response']['card'] = {}
             res['response']['card']['type'] = 'BigImage'
-            res['response']['card']['title'] = 'Угадай город'
+            res['response']['card']['title'] = \
+                sessionStorage[user_id]['first_name'].title() + ' Угадай город'
             res['response']['card']['image_id'] = random.choice(cities[good])
             res['response']['text'] = 'Я угадал!'
 
@@ -102,7 +103,9 @@ def handle_dialog(res, req):
             # если этот город среди известных нам,
             # то показываем его (выбираем одну из двух картинок случайно)
             if good in city.lower():
-                res['response']['text'] = 'Верно!, Угадаешь страну?'
+                res['response']['text'] = 'Верно!, ' \
+                                          + sessionStorage[user_id]['first_name'].title() \
+                                          + ', Угадаешь страну?'
                 pretty_flag = True
             # если не нашел, то отвечает пользователю
             # 'Первый раз слышу об этом городе.'
@@ -110,7 +113,7 @@ def handle_dialog(res, req):
                 res['response']['text'] = \
                     'Неверно. Попробуй еще разок!'
         elif countries[good] in req["request"]['command'] and pretty_flag:
-                res['response']['text'] = 'Всё верно, продолжим?))'
+                res['response']['text'] = 'Всё верно, ' + sessionStorage[user_id]['first_name'].title() + ', продолжим?))'
                 res['response']['buttons'] = [
                     {
                         'title': 'Показать на карте',
@@ -129,9 +132,8 @@ def handle_dialog(res, req):
                 pretty_flag = False
         else:
             res['response']['text'] = \
-                'Неверно. Попробуй еще разок!'
+                'Неверно. ' + sessionStorage[user_id]['first_name'].title() + ', Попробуй еще разок!'
             # ищем город в сообщение от пользователя
-
 
 
 def get_city(req):

@@ -46,7 +46,7 @@ def handle_dialog(res, req):
 
     # если пользователь новый, то просим его представиться.
     if req['session']['new']:
-        res['response']['text'] = '(1) Привет! Назови свое имя!'
+        res['response']['text'] = '(2) Привет! Назови свое имя!'
         # создаем словарь в который в будущем положим имя пользователя
         sessionStorage[user_id] = {
             'first_name': None
@@ -78,13 +78,14 @@ def handle_dialog(res, req):
     # что хочет увидеть.
     else:
         res['response'][
-            'text'] = sessionStorage[user_id]['first_name'] \
+            'text'] = sessionStorage[user_id]['first_name'].title() \
                       + ', угадай город'
         # получаем варианты buttons из ключей нашего словаря cities
         good = random.choice(['москва', 'нью-йорк', 'париж'])
+
         res['response']['card'] = {}
         res['response']['card']['type'] = 'BigImage'
-        res['response']['card']['title'] = sessionStorage[user_id]['first_name']\
+        res['response']['card']['title'] = sessionStorage[user_id]['first_name'].title()\
                                            + ', угадай город'
         res['response']['card']['image_id'] = random.choice(cities[good])
         res['response']['text'] = 'Я угадал!'

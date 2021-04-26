@@ -97,9 +97,20 @@ def handle_dialog(res, req):
 
         elif 'нет' in req["request"]['command']:
             res['response']['text'] = 'Как хочешь'
-        elif pretty_flag:
-            if countries[good] in req["request"]['command']:
-                res['response']['text'] = 'всё верно'
+        elif not pretty_flag:
+            city = req["request"]['command']
+            # если этот город среди известных нам,
+            # то показываем его (выбираем одну из двух картинок случайно)
+            if good in city.lower():
+                res['response']['text'] = 'Верно!, Угадаешь страну?'
+                pretty_flag = True
+            # если не нашел, то отвечает пользователю
+            # 'Первый раз слышу об этом городе.'
+            else:
+                res['response']['text'] = \
+                    'Неверно. Попробуй еще разок!'
+        elif countries[good] in req["request"]['command'] and pretty_flag:
+                res['response']['text'] = 'Всё верно, продолжим?))'
                 res['response']['buttons'] = [
                     {
                         'title': 'Показать на карте',
@@ -116,23 +127,11 @@ def handle_dialog(res, req):
                     },
                 ]
                 pretty_flag = False
-            else:
-                res['response']['text'] = \
-                    'Неверно. Попробуй еще разок!'
         else:
+            res['response']['text'] = \
+                'Неверно. Попробуй еще разок!'
             # ищем город в сообщение от пользователя
-            city = req["request"]['command']
-            # если этот город среди известных нам,
-            # то показываем его (выбираем одну из двух картинок случайно)
-            if good in city.lower():
-                pretty_flag = True
-                res['response']['text'] = 'Верно!, Угадаешь страну?'
 
-            # если не нашел, то отвечает пользователю
-            # 'Первый раз слышу об этом городе.'
-            else:
-                res['response']['text'] = \
-                    'Неверно. Попробуй еще разок!'
 
 
 def get_city(req):

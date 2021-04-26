@@ -79,40 +79,41 @@ def handle_dialog(res, req):
     else:
         good = random.choice(['москва', 'нью-йорк', 'париж'])
 
-        res['response']['card'] = {}
-        res['response']['card']['type'] = 'BigImage'
-        res['response']['card']['title'] = 'Угадай город'
-        res['response']['card']['image_id'] = random.choice(cities[good])
-        res['response']['text'] = 'Я угадал!'
+        if 'да' in req["request"]['command']:
 
-        # ищем город в сообщение от пользователя
-        city = get_city(req)
-        # если этот город среди известных нам,
-        # то показываем его (выбираем одну из двух картинок случайно)
-        if city.title() == good:
-            res['response']['text'] = 'Верно!, Сыграем еще?'
-            res['response']['buttons'] = [
-                {
-                    'title': 'Показать на карте',
-                    'hide': True,
-                    "url": f"https://yandex.ru/maps/?mode=search&text={city}"
-                },
-                {
-                    'title': 'да',
-                    'hide': True,
-                },
-                {
-                    'title': 'нет',
-                    'hide': True,
-                },
-            ]
-        # если не нашел, то отвечает пользователю
-        # 'Первый раз слышу об этом городе.'
+            res['response']['card'] = {}
+            res['response']['card']['type'] = 'BigImage'
+            res['response']['card']['title'] = 'Угадай город'
+            res['response']['card']['image_id'] = random.choice(cities[good])
+            res['response']['text'] = 'Я угадал!'
+
         else:
-            res['response']['text'] = \
-                'Неверно. Попробуй еще разок!'
-
-        return
+            # ищем город в сообщение от пользователя
+            city = get_city(req)
+            # если этот город среди известных нам,
+            # то показываем его (выбираем одну из двух картинок случайно)
+            if city.title() == good:
+                res['response']['text'] = 'Верно!, Сыграем еще?'
+                res['response']['buttons'] = [
+                    {
+                        'title': 'Показать на карте',
+                        'hide': True,
+                        "url": f"https://yandex.ru/maps/?mode=search&text={city}"
+                    },
+                    {
+                        'title': 'да',
+                        'hide': True,
+                    },
+                    {
+                        'title': 'нет',
+                        'hide': True,
+                    },
+                ]
+            # если не нашел, то отвечает пользователю
+            # 'Первый раз слышу об этом городе.'
+            else:
+                res['response']['text'] = \
+                    'Неверно. Попробуй еще разок!'
 
 
 def get_city(req):

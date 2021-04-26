@@ -46,7 +46,7 @@ def handle_dialog(res, req):
 
     # если пользователь новый, то просим его представиться.
     if req['session']['new']:
-        res['response']['text'] = '(4) Привет! Назови свое имя!'
+        res['response']['text'] = '(5) Привет! Назови свое имя!'
         # создаем словарь в который в будущем положим имя пользователя
         sessionStorage[user_id] = {
             'first_name': None
@@ -89,10 +89,10 @@ def handle_dialog(res, req):
 
         else:
             # ищем город в сообщение от пользователя
-            city = get_city(req)
+            city = req["request"]['command']
             # если этот город среди известных нам,
             # то показываем его (выбираем одну из двух картинок случайно)
-            if city.title() == good:
+            if good in city.lower():
                 res['response']['text'] = 'Верно!, Сыграем еще?'
                 res['response']['buttons'] = [
                     {

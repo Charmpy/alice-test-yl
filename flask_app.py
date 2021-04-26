@@ -88,64 +88,18 @@ def handle_dialog(res, req):
     # то это говорит о том, что он уже говорит о городе,
     # что хочет увидеть.
     else:
-        if 'да' in req["request"]['command']:
-            good = random.choice(['москва', 'париж', 'нью-йорк'])
-            res['response']['card'] = {}
-            res['response']['card']['type'] = 'BigImage'
-            res['response']['card']['title'] = \
-                sessionStorage[user_id]['first_name'].title() + ', Угадай город'
-            res['response']['card']['image_id'] = random.choice(cities[good])
-            res['response']['text'] = 'Я угадал!'
+        if 'Переведи слово'.lower() in req["request"]['command'].lower():
+            translation = req["request"]['command'].lower()[15:]
+            result = translation
+            # result = GoogleTranslator(source='auto',
+            #                               target='en').translate(translation)
+            res['response']['text'] = result
 
-        elif 'нет' in req["request"]['command']:
-            res['response']['text'] = 'Как хочешь'
-        elif not pretty_flag:
-            city = req["request"]['command']
-            # если этот город среди известных нам,
-            # то показываем его (выбираем одну из двух картинок случайно)
-            if good in city.lower():
-                res['response']['text'] = 'Верно!, ' \
-                                          + sessionStorage[user_id]['first_name'].title() \
-                                          + ', Угадаешь страну?'
-                pretty_flag = True
-            # если не нашел, то отвечает пользователю
-            # 'Первый раз слышу об этом городе.'
-            else:
-                res['response']['text'] = \
-                    'Неверно. Попробуй еще разок!'
-        elif countries[good] in req["request"]['command'] and pretty_flag:
-                res['response']['text'] = 'Всё верно, ' + sessionStorage[user_id]['first_name'].title() + ', продолжим?))'
-                res['response']['buttons'] = [
-                    {
-                        'title': 'Показать на карте',
-                        'hide': True,
-                        "url": f"https://yandex.ru/maps/?mode=search&text={good}"
-                    },
-                    {
-                        'title': 'да',
-                        'hide': True,
-                    },
-                    {
-                        'title': 'нет',
-                        'hide': True,
-                    },
-                ]
-                pretty_flag = False
         else:
             res['response']['text'] = \
-                'Неверно. ' + sessionStorage[user_id]['first_name'].title() + ', Попробуй еще разок!'
+                'Неверно. ' + sessionStorage[user_id][
+                    'first_name'].title() + ', Попробуй еще разок!'
             # ищем город в сообщение от пользователя
-
-
-def get_city(req):
-    # перебираем именованные сущности
-    for entity in req['request']['nlu']['entities']:
-        # если тип YANDEX.GEO то пытаемся получить город(city),
-        # если нет, то возвращаем None
-        if entity['type'] == 'YANDEX.GEO':
-            # возвращаем None, если не нашли сущности с типом YANDEX.GEO
-            return entity['value'].get('city', None)
-
 
 def get_first_name(req):
     # перебираем сущности
